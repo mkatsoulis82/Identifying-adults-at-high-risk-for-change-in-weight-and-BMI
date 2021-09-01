@@ -1,2 +1,576 @@
 *** Multiple Imputation 
 
+clear all
+macro drop _all
+set linesize 200
+quietly set more off
+
+* SET UP LOCAL DIRECTORIES
+global orig                            = "S:\CALIBER_18_010R\14jan2019"
+
+global data                            = "N:\Desktop\Final Paper - BMI change within person\Data"
+global dataset                         = "N:\Desktop\Final Paper - BMI change within person"
+global data_analysis_final_v2          = "N:\Desktop\Final Paper - BMI change within person\Analysis_final_v2"
+global data_datasets_final_v2          = "N:\Desktop\Final Paper - BMI change within person\Datasets_final_v2"
+global data_analysis_BMI_change_final2 = "N:\Desktop\Final Paper - BMI change within person\Analysis_BMI_change_final_v2"
+
+set more off
+
+
+
+
+
+use "$data_analysis_BMI_change_final2\Final Dataset All (Before multiple imputation - final) - 10y.dta", replace
+
+count
+
+
+gen year1998=year(date)-1998
+
+replace fh_cvd_cprd=0 if fh_cvd_cprd==.
+
+***********************************************************
+
+set more off
+
+gen year1998_2=year1998^2
+gen year1998_3=year1998^3
+
+
+
+gen     n_cat_nw=n_weighting_in_10y
+replace n_cat_nw=3 if n_weighting_in_10y>=3
+
+
+gen     n_cat_nc=n_contact_10y
+replace n_cat_nc=2 if n_contact_10y>=2  & n_contact_10y<=3
+replace n_cat_nc=3 if n_contact_10y>=4  & n_contact_10y<=5
+replace n_cat_nc=4 if n_contact_10y>=6  & n_contact_10y<=11
+replace n_cat_nc=5 if n_contact_10y>=12 & n_contact_10y<=23
+replace n_cat_nc=6 if n_contact_10y>=24
+
+
+gen n_cat_nw_2=n_cat_nw^2
+gen n_cat_nw_3=n_cat_nw^3
+
+gen n_cat_nc_2=n_cat_nc^2
+gen n_cat_nc_3=n_cat_nc^3
+
+* Recode ethnicity
+
+recode ethnicity_final 9=.
+
+gen     practice_region=prac_region-2 if prac_region~=1 | prac_region~=2 | prac_region~=3 | prac_region~=4
+replace practice_region=1 if prac_region==2
+replace practice_region=2 if prac_region==1 | prac_region==3 | prac_region==4
+
+gen     final_physical_activity_10y=1 if physical_activity_10y<=2
+replace final_physical_activity_10y=2 if physical_activity_10y>=3 & physical_activity_10y<=4
+replace final_physical_activity_10y=. if physical_activity_10y==.
+
+
+gen     other_chr_dis_0y=0
+replace other_chr_dis_0y=1 if dementia_0y==1 | ra_0y==1 |  copd_0y | renal_0y==1 |  gout_0y==1 |  hiv_0y==1 |  ibd_0y==1 |  sle_0y==1 | ckd_0y==1
+
+gen     other_chr_dis_10y=0
+replace other_chr_dis_10y=1 if dementia_10y==1 | ra_10y==1 |  copd_10y | renal_10y==1 |  gout_10y==1 |  hiv_10y==1 |  ibd_10y==1 |  sle_10y==1 | ckd_10y==1
+
+
+
+gen     phycological_0y=0
+replace phycological_0y=1 if depression_0y ==1 | phychol_0y==1
+
+gen     phycological_10y=0
+replace phycological_10y=1 if depression_10y ==1 | phychol_10y==1
+
+tab1 other_chr_dis_0y other_chr_dis_10y  phycological_0y phycological_10y cancer_0y cancer_10y diab_0y diab_10y comp_0y comp_10y
+
+
+save "$data_analysis_BMI_change_final2\Final Dataset All (Before MI) - 10y.dta", replace
+
+
+set more off
+
+
+keep if age_group==1
+
+save "$data_analysis_BMI_change_final2\Final Dataset 18_24 (Before MI) - 10y.dta", replace
+
+*************************************************************
+
+use "$data_analysis_BMI_change_final2\Final Dataset All (Before MI) - 10y.dta", replace
+
+keep if age_group==2
+
+save "$data_analysis_BMI_change_final2\Final Dataset 25_34 (Before MI) - 10y.dta", replace
+
+*************************************************************
+
+use "$data_analysis_BMI_change_final2\Final Dataset All (Before MI) - 10y.dta", replace
+
+keep if age_group==3
+
+save "$data_analysis_BMI_change_final2\Final Dataset 35_44 (Before MI) - 10y.dta", replace
+
+*************************************************************
+
+use "$data_analysis_BMI_change_final2\Final Dataset All (Before MI) - 10y.dta", replace
+
+keep if age_group==4
+
+save "$data_analysis_BMI_change_final2\Final Dataset 45_54 (Before MI) - 10y.dta", replace
+
+*************************************************************
+
+use "$data_analysis_BMI_change_final2\Final Dataset All (Before MI) - 10y.dta", replace
+
+keep if age_group==5
+
+save "$data_analysis_BMI_change_final2\Final Dataset 55_64 (Before MI) - 10y.dta", replace
+
+*************************************************************
+
+use "$data_analysis_BMI_change_final2\Final Dataset All (Before MI) - 10y.dta", replace
+
+keep if age_group==6
+
+save "$data_analysis_BMI_change_final2\Final Dataset 65_74 (Before MI) - 10y.dta", replace
+
+*************************************************************
+
+
+use "$data_analysis_BMI_change_final2\Final Dataset All (Before MI) - 10y.dta", replace
+
+keep if age_group==7
+
+save "$data_analysis_BMI_change_final2\Final Dataset 75plus (Before MI) - 10y.dta", replace
+
+*************************************************************
+
+
+use "$data_analysis_BMI_change_final2\Final Dataset 18_24 (Before MI) - 10y.dta", replace
+
+set more off
+
+gen age2=age^2
+gen age3=age^3
+
+gen bmi_final2=bmi_final^2
+gen bmi_final3=bmi_final^3
+gen bmi_final4=bmi_final^4
+
+
+* Multiple imputations
+
+gen     overweight=1 if bmi_final<25
+replace overweight=2 if bmi_final>=25
+
+gen     bmi_cat=1 if bmi_final<18.5
+replace bmi_cat=2 if bmi_final>=18.5 & bmi_final<25
+replace bmi_cat=3 if bmi_final>=25   & bmi_final<30
+replace bmi_cat=4 if bmi_final>=30   & bmi_final<40
+replace bmi_cat=5 if bmi_final>=40
+
+mi set wide
+mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+
+* Imputations
+
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
+
+
+save "$data_analysis_BMI_change_final2\Final Dataset 18_24 (After MI) - 10y.dta", replace
+
+
+
+***********************************************************
+
+* 25 - 34 years old
+
+
+use "$data_analysis_BMI_change_final2\Final Dataset 25_34 (Before MI) - 10y.dta", replace
+
+set more off
+
+gen age2=age^2
+gen age3=age^3
+
+gen bmi_final2=bmi_final^2
+gen bmi_final3=bmi_final^3
+gen bmi_final4=bmi_final^4
+
+
+* Multiple imputations
+
+gen     overweight=1 if bmi_final<25
+replace overweight=2 if bmi_final>=25
+
+gen     bmi_cat=1 if bmi_final<18.5
+replace bmi_cat=2 if bmi_final>=18.5 & bmi_final<25
+replace bmi_cat=3 if bmi_final>=25   & bmi_final<30
+replace bmi_cat=4 if bmi_final>=30   & bmi_final<40
+replace bmi_cat=5 if bmi_final>=40
+
+mi set wide
+mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+
+* Imputations
+
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
+
+
+save "$data_analysis_BMI_change_final2\Final Dataset 25_34 (After MI) - 10y.dta", replace
+
+
+
+***********************************************************
+
+
+* 35 - 44 years old
+
+
+use "$data_analysis_BMI_change_final2\Final Dataset 35_44 (Before MI) - 10y.dta", replace
+
+set more off
+
+gen age2=age^2
+gen age3=age^3
+
+gen bmi_final2=bmi_final^2
+gen bmi_final3=bmi_final^3
+gen bmi_final4=bmi_final^4
+
+
+* Multiple imputations
+
+gen     overweight=1 if bmi_final<25
+replace overweight=2 if bmi_final>=25
+
+gen     bmi_cat=1 if bmi_final<18.5
+replace bmi_cat=2 if bmi_final>=18.5 & bmi_final<25
+replace bmi_cat=3 if bmi_final>=25   & bmi_final<30
+replace bmi_cat=4 if bmi_final>=30   & bmi_final<40
+replace bmi_cat=5 if bmi_final>=40
+
+mi set wide
+mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+
+* Imputations
+
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
+
+
+save "$data_analysis_BMI_change_final2\Final Dataset 35_44 (After MI) - 10y.dta", replace
+
+
+
+***********************************************************
+
+
+
+* 45 - 54 years old
+
+
+use "$data_analysis_BMI_change_final2\Final Dataset 45_54 (Before MI) - 10y.dta", replace
+
+set more off
+
+gen age2=age^2
+gen age3=age^3
+
+gen bmi_final2=bmi_final^2
+gen bmi_final3=bmi_final^3
+gen bmi_final4=bmi_final^4
+
+
+* Multiple imputations
+
+gen     overweight=1 if bmi_final<25
+replace overweight=2 if bmi_final>=25
+
+gen     bmi_cat=1 if bmi_final<18.5
+replace bmi_cat=2 if bmi_final>=18.5 & bmi_final<25
+replace bmi_cat=3 if bmi_final>=25   & bmi_final<30
+replace bmi_cat=4 if bmi_final>=30   & bmi_final<40
+replace bmi_cat=5 if bmi_final>=40
+
+mi set wide
+mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+
+* Imputations
+
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
+
+
+save "$data_analysis_BMI_change_final2\Final Dataset 45_54 (After MI) - 10y.dta", replace
+
+
+
+***********************************************************
+
+
+* 55 - 64 years old
+
+
+
+use "$data_analysis_BMI_change_final2\Final Dataset 55_64 (Before MI) - 10y.dta", replace
+
+set more off
+
+gen age2=age^2
+gen age3=age^3
+
+gen bmi_final2=bmi_final^2
+gen bmi_final3=bmi_final^3
+gen bmi_final4=bmi_final^4
+
+
+* Multiple imputations
+
+gen     overweight=1 if bmi_final<25
+replace overweight=2 if bmi_final>=25
+
+gen     bmi_cat=1 if bmi_final<18.5
+replace bmi_cat=2 if bmi_final>=18.5 & bmi_final<25
+replace bmi_cat=3 if bmi_final>=25   & bmi_final<30
+replace bmi_cat=4 if bmi_final>=30   & bmi_final<40
+replace bmi_cat=5 if bmi_final>=40
+
+mi set wide
+mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+
+* Imputations
+
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
+
+
+save "$data_analysis_BMI_change_final2\Final Dataset 55_64 (After MI) - 10y.dta", replace
+
+
+
+***********************************************************
+
+
+* 65 - 74 years old
+
+
+
+use "$data_analysis_BMI_change_final2\Final Dataset 65_74 (Before MI) - 10y.dta", replace
+
+set more off
+
+gen age2=age^2
+gen age3=age^3
+
+gen bmi_final2=bmi_final^2
+gen bmi_final3=bmi_final^3
+gen bmi_final4=bmi_final^4
+
+
+* Multiple imputations
+
+gen     overweight=1 if bmi_final<25
+replace overweight=2 if bmi_final>=25
+
+gen     bmi_cat=1 if bmi_final<18.5
+replace bmi_cat=2 if bmi_final>=18.5 & bmi_final<25
+replace bmi_cat=3 if bmi_final>=25   & bmi_final<30
+replace bmi_cat=4 if bmi_final>=30   & bmi_final<40
+replace bmi_cat=5 if bmi_final>=40
+
+mi set wide
+mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+
+* Imputations
+
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
+
+
+save "$data_analysis_BMI_change_final2\Final Dataset 65_74 (After MI) - 10y.dta", replace
+
+
+
+***********************************************************
+
+
+* 75 + years old
+
+
+use "$data_analysis_BMI_change_final2\Final Dataset 75plus (Before MI) - 10y.dta", replace
+
+set more off
+
+gen age2=age^2
+gen age3=age^3
+
+gen bmi_final2=bmi_final^2
+gen bmi_final3=bmi_final^3
+gen bmi_final4=bmi_final^4
+
+
+* Multiple imputations
+
+gen     overweight=1 if bmi_final<25
+replace overweight=2 if bmi_final>=25
+
+gen     bmi_cat=1 if bmi_final<18.5
+replace bmi_cat=2 if bmi_final>=18.5 & bmi_final<25
+replace bmi_cat=3 if bmi_final>=25   & bmi_final<30
+replace bmi_cat=4 if bmi_final>=30   & bmi_final<40
+replace bmi_cat=5 if bmi_final>=40
+
+mi set wide
+mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+
+* Imputations
+
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
+
+
+save "$data_analysis_BMI_change_final2\Final Dataset 75plus (After MI) - 10y.dta", replace
+
+
+
+***********************************************************
+
+
+use "$data_analysis_BMI_change_final2\Final Dataset 18_24 (After MI) - 10y.dta", replace
+append using "$data_analysis_BMI_change_final2\Final Dataset 25_34 (After MI) - 10y.dta"
+append using "$data_analysis_BMI_change_final2\Final Dataset 35_44 (After MI) - 10y.dta"
+append using "$data_analysis_BMI_change_final2\Final Dataset 45_54 (After MI) - 10y.dta"
+append using "$data_analysis_BMI_change_final2\Final Dataset 55_64 (After MI) - 10y.dta"
+append using "$data_analysis_BMI_change_final2\Final Dataset 65_74 (After MI) - 10y.dta"
+append using "$data_analysis_BMI_change_final2\Final Dataset 75plus (After MI) - 10y.dta"
+
+
+save "$data_analysis_BMI_change_final2\Final Dataset All-ages (After MI) - 10y.dta", replace
+
+
+
+***********************************************************
+***********************************************************
+***********************************************************
+***********************************************************
+***********************************************************
+***********************************************************
+***********************************************************
+***********************************************************
+
+
+* Delta Adjustment
+
+
+
+
+* CLEAR WORKSPACE SO NO RESIDUAL COMMANDS FROM OTHER FILES
+clear all
+macro drop _all
+set linesize 200
+quietly set more off
+
+global orig                            = "S:\CALIBER_18_010R\14jan2019"
+
+global data                            = "N:\Desktop\Final Paper - BMI change within person\Data"
+global dataset                         = "N:\Desktop\Final Paper - BMI change within person"
+global data_analysis_final_v2          = "N:\Desktop\Final Paper - BMI change within person\Analysis_final_v2"
+global data_analysis_BMI_change_final2 = "N:\Desktop\Final Paper - BMI change within person\Analysis_BMI_change_final_v2"
+
+set more off
+
+
+
+use "$dataset\Results from HSE.dta", replace
+
+
+
+scalar a1_s1_10y_change = m1624_10y_change[1]
+scalar a1_s2_10y_change = w1624_10y_change[1]
+scalar a2_s1_10y_change = m2534_10y_change[1]
+scalar a2_s2_10y_change = w2534_10y_change[1]
+scalar a3_s1_10y_change = m3544_10y_change[1]
+scalar a3_s2_10y_change = w3544_10y_change[1]
+scalar a4_s1_10y_change = m4554_10y_change[1]
+scalar a4_s2_10y_change = w4554_10y_change[1]
+scalar a5_s1_10y_change = m5564_10y_change[1]
+scalar a5_s2_10y_change = w5564_10y_change[1]
+scalar a6_s1_10y_change = m6574_10y_change[1]
+scalar a6_s2_10y_change = w6574_10y_change[1]
+
+
+use "$data_analysis_BMI_change_final2\Final Dataset All-ages (After MI) - 10y.dta", replace
+
+
+set more off
+
+
+forvalues j=1(1)6{
+	forvalues k=1(1)2{
+		preserve
+		drop if bmi_change_10y~=. 
+		mi estimate, post: reg bmi_change_10y  if age_group==`j' & gender==`k'
+		scalar mean_a`j'_s`k'=_b[_cons]
+		scalar n_a`j'_s`k'=e(N)
+		restore
+		count if age_group==`j' & gender==`k'
+		scalar N_a`j'_s`k'=r(N)
+		reg bmi_change_10y  if age_group==`j' & gender==`k' & bmi_change_10y~=.
+		scalar mean_o_a`j'_s`k'=_b[_cons]
+	}
+}
+*
+
+forvalues j=1(1)6{
+	forvalues k=1(1)2{
+		gen delta_`j'_`k'_10y=.
+	}
+}
+*
+
+
+forvalues j=1(1)6{
+	forvalues k=1(1)2{
+		replace delta_`j'_`k'_10y   = (((a`j'_s`k'_10y_change*N_a`j'_s`k')-((N_a`j'_s`k'-n_a`j'_s`k')*mean_o_a`j'_s`k'))/n_a`j'_s`k') -  mean_a`j'_s`k' if bmi_change_10y==. & age_group==`j' & gender==`k'
+	}
+}
+*
+
+forvalues j=1(1)6{
+	forvalues k=1(1)2{
+		forvalues imp=1(1)10{
+			replace  _`imp'_bmi_change_10y = _`imp'_bmi_change_10y + delta_`j'_`k'_10y if bmi_change_10y==. & age_group==`j' & gender==`k'
+		}
+	}
+}
+*
+
+
+
+forvalues j=1(1)6{
+	forvalues k=1(1)2{
+		mi estimate, post: reg bmi_change_10y  if age_group==`j' & gender==`k'
+	}
+}
+
+
+scalar list a1_s1_10y_change a1_s2_10y_change a2_s1_10y_change a2_s2_10y_change a3_s1_10y_change a3_s2_10y_change  a4_s1_10y_change  a4_s2_10y_change  a5_s1_10y_change a5_s2_10y_change a6_s1_10y_change a6_s2_10y_change 
+
+sum delta_1_1_10y- delta_6_2_10y
+
+drop if age_group==7
+
+
+save "$data_analysis_BMI_change_final2\Final Dataset All-ages 18_75 (After MI - delta) - 10y.dta", replace
+
+
+
+
+
+
+
