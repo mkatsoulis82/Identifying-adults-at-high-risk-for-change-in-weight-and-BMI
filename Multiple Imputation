@@ -1,5 +1,8 @@
 *** Multiple Imputation 
 
+* in the beginning we present Multiple Imputation without delta adjustment
+* and then how we applied the delta adjustment
+
 clear all
 macro drop _all
 set linesize 200
