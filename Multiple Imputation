@@ -48,7 +48,8 @@ replace bmi_cat=5 if bmi_final>=40
 
 mi set wide
 mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
-mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y ///
+bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
 
 * Imputations
 
@@ -87,7 +88,10 @@ mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cv
 * number of weight measurements between baseline and 10 years: n_cat_nw 
 * number of clinical consultations between baseline and 10 years: n_cat_nc  
 
-mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y ///
+(mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  ///
+bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y ///
+diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
 
 
 save "$data_analysis_BMI_change_final2\Final Dataset 18_24 (After MI) - 10y.dta", replace
@@ -122,15 +126,17 @@ replace bmi_cat=5 if bmi_final>=40
 
 mi set wide
 mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
-mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y ///
+bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
 
 * Imputations
 
 * The imputation models were adjusted for the same variables presented in lines 58-88
 
-
-mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
-
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y ///
+(mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  ///
+bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y ///
+diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
 
 save "$data_analysis_BMI_change_final2\Final Dataset 25_34 (After MI) - 10y.dta", replace
 
@@ -166,14 +172,17 @@ replace bmi_cat=5 if bmi_final>=40
 
 mi set wide
 mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
-mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y ///
+bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
 
 * Imputations
 
 * The imputation models were adjusted for the same variables presented in lines 58-88
 
-mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
-
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y ///
+(mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  ///
+bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y ///
+diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
 
 save "$data_analysis_BMI_change_final2\Final Dataset 35_44 (After MI) - 10y.dta", replace
 
@@ -210,14 +219,17 @@ replace bmi_cat=5 if bmi_final>=40
 
 mi set wide
 mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
-mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y ///
+bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
 
 * Imputations
 
 * The imputation models were adjusted for the same variables presented in lines 58-88
 
-mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
-
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y ///
+(mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  ///
+bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y ///
+diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
 
 save "$data_analysis_BMI_change_final2\Final Dataset 45_54 (After MI) - 10y.dta", replace
 
@@ -254,14 +266,17 @@ replace bmi_cat=5 if bmi_final>=40
 
 mi set wide
 mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
-mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y ///
+bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
 
 * Imputations
 
 * The imputation models were adjusted for the same variables presented in lines 58-88
 
-mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
-
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y ///
+(mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  ///
+bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y ///
+diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
 
 save "$data_analysis_BMI_change_final2\Final Dataset 55_64 (After MI) - 10y.dta", replace
 
@@ -298,14 +313,17 @@ replace bmi_cat=5 if bmi_final>=40
 
 mi set wide
 mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
-mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y ///
+bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
 
 * Imputations
 
 * The imputation models were adjusted for the same variables presented in lines 58-88
 
-mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
-
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y ///
+(mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  ///
+bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y ///
+diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
 
 save "$data_analysis_BMI_change_final2\Final Dataset 65_74 (After MI) - 10y.dta", replace
 
@@ -345,12 +363,15 @@ replace bmi_cat=5 if bmi_final>=40
 
 mi set wide
 mi register imputed bmi_change_10y smoking_status_10y final_physical_activity_10y imd2015_5 ethnicity_final
-mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
+mi register regular practice_region bmi_cat bmi_final gender age age2 age3 fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y ///
+bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc 
 
 * Imputations
 
-mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y (mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
-
+mi impute chained (regress, noi) bmi_change_10y (mlogit, augment noi omit(bmi_change_10y  i.imd2015_5 i.ethnicity_final))  final_physical_activity_10y ///
+(mlogit, augment noi omit(bmi_change_10y i.final_physical_activity_10y)) imd2015_5 ethnicity_final  smoking_status_10y   = year1998 year1998_2 i.practice_region  ///
+bmi_cat#c.bmi_final  i.gender age age2 age3  fh_cvd_cprd cancer_0y diab_0y comp_0y other_chr_dis_0y phycological_0y hyper_0y diuretics_0y bariatric_0y cancer_10y ///
+diab_10y comp_10y other_chr_dis_10y phycological_10y hyper_10y diuretics_10y bariatric_10y n_cat_nw n_cat_nc  , add(10) rseed(11051982) force
 
 save "$data_analysis_BMI_change_final2\Final Dataset 75plus (After MI) - 10y.dta", replace
 
@@ -442,8 +463,9 @@ use "$data_analysis_BMI_change_final2\Final Dataset All-ages (After MI) - 10y.dt
 
 
 * We incorporated this information on the imputed values of BMI change
-* see page 17 and 18 from the Appendix of the paper "Identifying adults at high-risk for change in weight and BMI in England: a longitudinal, large-scale, population-based cohort study using electronic health records"
-* https://www.thelancet.com/cms/10.1016/S2213-8587(21)00207-2/attachment/a1867382-6ca9-4886-a733-a416437ce227/mmc1.pdf 
+* see page 17 and 18 from the Appendix of the paper 
+* "Identifying adults at high-risk for change in weight and BMI in England: a longitudinal, large-scale, population-based cohort study using electronic health records"
+* Appendix: https://www.thelancet.com/cms/10.1016/S2213-8587(21)00207-2/attachment/a1867382-6ca9-4886-a733-a416437ce227/mmc1.pdf 
 
 
 set more off
