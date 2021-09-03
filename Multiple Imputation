@@ -4,7 +4,6 @@
 * and then how we applied the delta adjustment
 
 
-
 clear all
 macro drop _all
 set linesize 200
@@ -528,9 +527,6 @@ drop if age_group==7
 
 
 save "$data_analysis_BMI_change_final2\Final Dataset All-ages 18_75 (After MI - delta) - 10y.dta", replace
-
-
-
 
 
 
